@@ -121,13 +121,12 @@
 
     /* ─── SIDE FLOWERS (flower3-decoration, parallax on both sides) ─── */
     .side-flower {
-      position: absolute;
+      position: fixed;
       top: 40%;
-      width: min(26vw, 220px);
-      opacity: 0.6;
+      width: min(30vw, 220px);
       pointer-events: none;
       will-change: transform;
-      z-index: 1;
+      z-index: 500;
     }
 
     .side-flower-left {
@@ -141,8 +140,7 @@
 
     @media (max-width: 650px) {
       .side-flower {
-        width: min(36vw, 150px);
-        opacity: 0.42;
+        width: min(36vw,150px);
         top: 46%;
       }
 
@@ -196,7 +194,7 @@
     /* ── GLASS CARD BASE ── */
     .glass {
       background: var(--glass-bg);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--glass-border);
       border-radius: 60px;
@@ -235,7 +233,7 @@
 
     .hero-card {
       text-align: center;
-      padding: clamp(2.4rem, 8vw, 5rem) clamp(1.5rem, 6vw, 3rem) clamp(3rem, 10vw, 6rem);
+      padding: clamp(2.4rem, 8vw, 8rem) clamp(2.5rem, 6vw, 3rem) clamp(4rem, 10vw, 6rem);
       max-width: 440px;
       width: min(92vw, 440px);
       height: auto;
@@ -246,7 +244,7 @@
       justify-content: center;
       z-index: 2;
       animation: fadeInUp 1.3s ease both;
-      border-radius: min(30vw, 200px);
+      border-radius: min(60vw, 200px);
       position: relative;
       padding-top: clamp(2.4rem, 10vw, 100px);
       box-sizing: border-box;
@@ -254,11 +252,10 @@
 
     .hero-flower-bottom {
       position: absolute;
-      bottom: clamp(-120px, -22vw, -180px);
+      bottom: -64px;
       left: 50%;
-      transform: translateX(-50%);
-      width: min(80vw, 480px);
-      max-width: 480px;
+      transform: translateX(-90%);
+      width: min(88%, 420px);
       z-index: 3;
       pointer-events: none;
     }
@@ -273,7 +270,7 @@
 
     .hero-names {
       font-family: var(--font-serif);
-      font-size: clamp(2.8rem, 10vw, 7rem);
+      font-size: clamp(3.6rem, 7vw, 5.5rem);
       font-weight: 600;
       line-height: 0.95;
       color: var(--text-dark);
@@ -763,6 +760,55 @@
       margin: 0.4rem 0;
     }
 
+    /* ─── MAP CARD ─── */
+    .map-card {
+      display: block;
+      max-width: 480px;
+      margin: 2.2rem auto 0;
+      padding: 0.9rem;
+      border-radius: 32px;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .map-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 50px rgba(80, 110, 60, 0.22);
+    }
+
+    .map-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 24px;
+    }
+
+    @keyframes mapSquish {
+      0% {
+        transform: scale(1, 1);
+      }
+
+      25% {
+        transform: scale(0.90, 1.08);
+      }
+
+      50% {
+        transform: scale(1.06, 0.92);
+      }
+
+      75% {
+        transform: scale(0.97, 1.03);
+      }
+
+      100% {
+        transform: scale(1, 1);
+      }
+    }
+
+    .map-card.squish {
+      animation: mapSquish 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+    }
+
     /* Timeline schedule */
     .schedule-wrap {
       margin-top: 3.5rem;
@@ -961,9 +1007,13 @@
       border: none;
       cursor: pointer;
       border-radius: 50px;
-      transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+      transition: background 0.3s, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
       align-self: center;
       box-shadow: 0 4px 20px rgba(107, 143, 113, 0.35);
+    }
+
+    .btn-rsvp:active {
+      transform: scale(0.92);
     }
 
     .btn-rsvp:hover {
@@ -1042,12 +1092,239 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 20px rgba(80, 110, 60, 0.25);
-      transition: transform 0.3s, background 0.3s;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s;
+    }
+
+    .music-btn:active {
+      transform: scale(0.85);
     }
 
     .music-btn:hover {
       transform: scale(1.1);
       background: rgba(107, 143, 113, 0.55);
+    }
+
+    /* ─── INTRO / WELCOME CARD ─── */
+    .intro-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: rgba(240, 238, 228, 0.42);
+      backdrop-filter: blur(22px) saturate(120%);
+      -webkit-backdrop-filter: blur(22px) saturate(120%);
+      transition: transform 1.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .intro-overlay.intro-closing {
+      transform: translateY(-100%) scale(0.985);
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    .intro-card {
+      width: min(92vw, 400px);
+      text-align: center;
+      padding: clamp(3.4rem, 10vw, 4.4rem) clamp(1.8rem, 6vw, 2.6rem) clamp(3rem, 8vw, 3.6rem);
+      border-radius: 36px;
+      animation: fadeInUp 1s ease both;
+    }
+
+    .intro-names {
+      font-family: var(--font-serif);
+      font-size: clamp(1.9rem, 7vw, 2.6rem);
+      font-weight: 600;
+      color: var(--text-dark);
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+    }
+
+    .intro-names .amp {
+      font-style: italic;
+      color: var(--sage);
+      font-size: 0.7em;
+      margin: 0 0.15em;
+    }
+
+    .intro-date {
+      margin-top: 0.9rem;
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--sage);
+    }
+
+    .intro-divider {
+      width: 46px;
+      height: 1px;
+      background: rgba(80, 110, 60, 0.35);
+      margin: 1.4rem auto;
+    }
+
+    .intro-invite {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--text-mid);
+      letter-spacing: 0.02em;
+    }
+
+    .intro-open-btn {
+      margin-top: 2.2rem;
+      padding: 0.85rem 2.6rem;
+      border: none;
+      border-radius: 999px;
+      background: var(--sage, #6b8f71);
+      color: #fff;
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 10px 28px rgba(80, 110, 60, 0.3);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
+    }
+
+    .intro-open-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 34px rgba(80, 110, 60, 0.38);
+    }
+
+    .intro-open-btn:active {
+      transform: scale(0.9);
+    }
+
+    .intro-card {
+      position: relative;
+      overflow: visible;
+    }
+
+    .intro-card-heart {
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--sage, #6b8f71);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(80, 110, 60, 0.35);
+      z-index: 2;
+    }
+
+    .intro-card-heart svg {
+      width: 18px;
+      height: 18px;
+      fill: #fff;
+    }
+
+    .intro-flower-top {
+      position: absolute;
+      top: -34px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 108%;
+      max-width: 460px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .intro-flower-bottom {
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 92%;
+      max-width: 380px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .intro-card > * {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ─── FALLING PARTICLES (snow) ─── */
+    .snow-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 250;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .snowflake {
+      position: absolute;
+      top: -5vh;
+      left: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.55);
+      opacity: 0;
+      animation-name: snowFall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+
+    @keyframes snowFall {
+      0% {
+        transform: translate(0, 0);
+        opacity: 0;
+      }
+
+      8% {
+        opacity: var(--flake-opacity, 0.85);
+      }
+
+      92% {
+        opacity: var(--flake-opacity, 0.85);
+      }
+
+      100% {
+        transform: translate(var(--drift, 30px), 112vh);
+        opacity: 0;
+      }
+    }
+
+    /* ─── WATERMARK ─── */
+    .site-watermark {
+      position: fixed;
+      bottom: 1.1rem;
+      left: 1.2rem;
+      z-index: 300;
+      font-family: var(--font-sans);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      color: var(--text-mid);
+      background: rgba(255, 255, 255, 0.28);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      padding: 0.4rem 0.8rem;
+      border-radius: 999px;
+      text-decoration: none;
+      opacity: 0.75;
+      transition: opacity 0.3s;
+    }
+
+    .site-watermark:hover {
+      opacity: 1;
+    }
+
+    @media (max-width: 650px) {
+      .site-watermark {
+        bottom: 0.9rem;
+        left: 0.9rem;
+        font-size: 0.6rem;
+        padding: 0.32rem 0.65rem;
+      }
     }
 
     .music-btn svg {
@@ -1307,17 +1584,62 @@
         justify-content: space-between;
       }
     }
+
+    @media (orientation: landscape) and (max-height: 560px) {
+      #hero {
+        min-height: auto;
+        padding: 3rem 1rem;
+      }
+
+      .hero-card {
+        min-height: auto;
+        padding: 2rem 1.6rem 2.6rem !important;
+      }
+
+      .hero-names {
+        font-size: clamp(2.2rem, 6vw, 3.6rem);
+        margin-top: 0.6rem;
+      }
+
+      .hero-flower-bottom {
+        width: min(60%, 260px);
+        bottom: -40px;
+      }
+    }
   </style>
 </head>
 
 <body>
 
+  <!-- ─── INTRO / WELCOME CARD ─── -->
+  <div class="intro-overlay" id="introOverlay">
+    <div class="intro-card glass">
+      <img class="intro-flower-top" src="img/flower3-decoration.webp" alt="" />
+      <div class="intro-card-heart">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M12 21s-7.5-4.9-10.3-9.3C-.4 8.1 1.4 4 5.4 4c2.1 0 3.7 1.1 4.6 2.7C10.9 5.1 12.5 4 14.6 4c4 0 5.8 4.1 3.7 7.7C19.5 16.1 12 21 12 21z" />
+        </svg>
+      </div>
+      <div class="intro-names">Janith<span class="amp">&amp;</span>Malsha</div>
+      <div class="intro-date">October 15, 2026</div>
+      <div class="intro-divider"></div>
+      <div class="intro-invite">Cordially Invites</div>
+      <button type="button" class="intro-open-btn" id="introOpenBtn">Open</button>
+      <img class="intro-flower-bottom" src="img/flower2-decoration.webp" alt="" />
+    </div>
+  </div>
+
   <!-- ─── GLOBAL PARALLAX SCENE (fixed bg) ─── -->
   <div class="scene" id="scene">
     <div class="scene-bg" id="sceneBg"></div>
-    <img class="side-flower side-flower-left" id="sideFlowerLeft" src="img/flower3-decoration.webp" alt="" />
-    <img class="side-flower side-flower-right" id="sideFlowerRight" src="img/flower3-decoration.webp" alt="" />
   </div>
+
+  <img class="side-flower side-flower-left" id="sideFlowerLeft" src="img/flower3-decoration.webp" alt="" />
+  <img class="side-flower side-flower-right" id="sideFlowerRight" src="img/flower3-decoration.webp" alt="" />
+
+  <!-- ─── FALLING PARTICLES ─── -->
+  <div class="snow-layer" id="snowLayer"></div>
 
   <div id="page">
 
@@ -1502,6 +1824,11 @@
             </div>
             
           </div>
+
+          <a href="https://maps.app.goo.gl/zwXuMSyMaotT7tB3A" target="_blank" rel="noopener"
+            class="map-card glass fade-in" style="background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12);">
+            <img src="img/map.png" alt="Map showing Vinrich Lake Resort location" />
+          </a>
         </div>
 
         <div style="height: 5rem;"></div>
@@ -1520,6 +1847,9 @@
 
           <div class="rsvp-card glass fade-in" style="background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12);">
             <form class="rsvp-form" id="rsvpForm">
+              <input type="hidden" name="_subject" value="New RSVP — Janith &amp; Malsha's Wedding" />
+              <input type="hidden" name="_template" value="table" />
+              <input type="hidden" name="_captcha" value="false" />
               <div class="form-row">
                 <div class="form-group">
                   <label for="fname">First Name</label>
@@ -1590,6 +1920,9 @@
 
     </div><!-- #page -->
 
+    <!-- ─── WATERMARK ─── -->
+    <div class="site-watermark">@NYdesigns</div>
+
     <!-- ─── MUSIC BUTTON ─── -->
     <button class="music-btn" id="musicBtn" title="Toggle music" aria-label="Toggle music">
       <svg class="play-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -1602,6 +1935,60 @@
     </button>
 
     <script>
+      /* ─── INTRO / WELCOME CARD ─── */
+      (function () {
+        const overlay = document.getElementById('introOverlay');
+        const openBtn = document.getElementById('introOpenBtn');
+        if (!overlay || !openBtn) return;
+
+        // Lock background scroll while the welcome card is showing
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
+
+        openBtn.addEventListener('click', function () {
+          overlay.classList.add('intro-closing');
+          document.documentElement.style.overflow = '';
+          document.body.style.overflow = '';
+
+          overlay.addEventListener('transitionend', function handler(e) {
+            if (e.propertyName !== 'transform') return;
+            overlay.style.display = 'none';
+            overlay.removeEventListener('transitionend', handler);
+          });
+        }, { once: true });
+      })();
+
+      /* ─── FALLING PARTICLES (snow) ─── */
+      (function () {
+        const layer = document.getElementById('snowLayer');
+        if (!layer) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const FLAKE_COUNT = window.innerWidth < 650 ? 22 : 36;
+
+        for (let i = 0; i < FLAKE_COUNT; i++) {
+          const flake = document.createElement('div');
+          flake.className = 'snowflake';
+
+          const size = (Math.random() * 4 + 2).toFixed(1);        // 2px – 6px
+          const left = (Math.random() * 100).toFixed(2);          // 0% – 100%
+          const duration = (Math.random() * 10 + 10).toFixed(1);  // 10s – 20s
+          const delay = (Math.random() * -20).toFixed(1);         // stagger start
+          const drift = (Math.random() * 80 - 40).toFixed(0);     // -40px – 40px sway
+          const opacity = (Math.random() * 0.5 + 0.35).toFixed(2); // 0.35 – 0.85
+
+          flake.style.width = size + 'px';
+          flake.style.height = size + 'px';
+          flake.style.left = left + '%';
+          flake.style.animationDuration = duration + 's';
+          flake.style.animationDelay = delay + 's';
+          flake.style.setProperty('--drift', drift + 'px');
+          flake.style.setProperty('--flake-opacity', opacity);
+
+          layer.appendChild(flake);
+        }
+      })();
+
       /* ─── PARALLAX ─── */
       // Only flower1 and flower2 respond to parallax; flower3 & flower5 are static.
       const isParallaxSrc = src => src.includes('flower1') || src.includes('flower2');
@@ -1731,8 +2118,43 @@
       /* ─── RSVP FORM ─── */
       document.getElementById('rsvpForm').addEventListener('submit', function (e) {
         e.preventDefault();
-        this.style.display = 'none';
-        document.getElementById('rsvpSuccess').style.display = 'block';
+        const form = this;
+        const submitBtn = form.querySelector('.btn-rsvp');
+        const originalLabel = submitBtn ? submitBtn.textContent : '';
+
+        if (submitBtn) {
+          submitBtn.textContent = 'Sending…';
+          submitBtn.disabled = true;
+        }
+
+        const formData = new FormData(form);
+        const payload = {};
+        formData.forEach((value, key) => { payload[key] = value; });
+
+        fetch('https://formsubmit.co/ajax/nethrayasas026@gmail.com', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        })
+          .then(function (res) {
+            if (!res.ok) throw new Error('RSVP request failed');
+            return res.json();
+          })
+          .then(function () {
+            form.style.display = 'none';
+            document.getElementById('rsvpSuccess').style.display = 'block';
+          })
+          .catch(function (err) {
+            console.error('RSVP send error:', err);
+            if (submitBtn) {
+              submitBtn.textContent = originalLabel;
+              submitBtn.disabled = false;
+            }
+            alert('Sorry, your RSVP could not be sent right now. Please try again in a moment.');
+          });
       });
 
       /* ─── MUSIC BUTTON ─── */
@@ -1775,8 +2197,21 @@
         nextNote();
       }
 
-      /* ─── TAP-TO-SCROLL (slow, smooth auto-scroll on touch/click) ─── */
+      /* ─── MAP CARD: squish animation on click/tap ─── */
       (function () {
+        const mapCard = document.querySelector('.map-card');
+        if (!mapCard) return;
+        mapCard.addEventListener('click', function () {
+          mapCard.classList.remove('squish');
+          void mapCard.offsetWidth; // restart animation if clicked again quickly
+          mapCard.classList.add('squish');
+        });
+        mapCard.addEventListener('animationend', function () {
+          mapCard.classList.remove('squish');
+        });
+      })();
+
+      /* ─── TAP-TO-SCROLL (slow, smooth auto-scroll on touch/click) ─── */      (function () {
         let autoScrolling = false;
         let rafId = null;
         const SCROLL_SPEED = 0.55; // px per frame — slow & gentle
@@ -1835,7 +2270,5 @@
 
     </script>
 </body>
-
-</html>
 
 </html>
