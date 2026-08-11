@@ -2,1013 +2,801 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A Question For You 💌</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>A Little Surprise For You 💗</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Quicksand:wght@400;500;600;700&display=swap');
+
   :root{
-    --pink: #ff4d7e;
-    --pink-dark: #e83b6b;
-    --pink-soft: #ffd6e2;
-    --ink: #2d2a32;
-    --ink-soft: #8a8590;
-    --bg: #ffffff;
-    --shadow-btn: 0 8px 0 var(--pink-dark), 0 14px 20px rgba(255,77,126,0.28);
-    --shadow-btn-no: 0 8px 0 #d8d5dc, 0 14px 20px rgba(0,0,0,0.10);
+    --cream:#FFF6F2;
+    --blush:#FFD9E0;
+    --blush-soft:#FFE9EC;
+    --rose:#E8607B;
+    --deep-rose:#C23B57;
+    --plum:#4A2438;
+    --gold:#D9A566;
+    --white:#FFFFFF;
   }
 
-  *{ box-sizing: border-box; }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
 
-  html, body{
-    margin:0;
-    padding:0;
+  html,body{
+    margin:0; padding:0; width:100%;
+    min-height:100%;
+    overflow-x:hidden;
+    overflow-y:auto;
+    background: linear-gradient(160deg, var(--cream) 0%, var(--blush-soft) 55%, var(--blush) 100%);
+    font-family:'Quicksand', sans-serif;
+    color:var(--plum);
+  }
+
+  #app{
+    position:relative;
     width:100%;
-    height:100%;
-    background: var(--bg);
-    font-family: 'Quicksand', sans-serif;
-    color: var(--ink);
-    overflow: hidden;
+    min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
   }
 
   .stage{
-    position: relative;
-    width: 100vw;
-    height: 100vh;
+    position:relative;
+    z-index: 2;
+    width:100%;
+    display:none;
+    flex-direction:column; align-items:center; justify-content:center;
+    padding: 40px 24px 60px 24px;
+    text-align:center;
+  }
+  .stage.active{ display:flex; }
+
+  #ambient-layer{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index: 1;
   }
 
-  /* ---------- PAGE 1 ---------- */
-  #page1{
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 32px;
-    transition: opacity .35s ease;
+  /* ---------- Ambient floating hearts (background, all stages) ---------- */
+  .ambient-heart{
+    position:absolute;
+    bottom:-10%;
+    font-size: 18px;
+    color: var(--rose);
+    opacity:0.35;
+    pointer-events:none;
+    animation: floatUp linear infinite;
+    user-select:none;
+  }
+  @keyframes floatUp{
+    0%{ transform:translateY(0) translateX(0) rotate(0deg); opacity:0; }
+    10%{ opacity:0.35; }
+    90%{ opacity:0.25; }
+    100%{ transform:translateY(-120vh) translateX(var(--drift,20px)) rotate(360deg); opacity:0; }
   }
 
-  #page1.hidden{
-    opacity: 0;
-    pointer-events: none;
+  /* ---------- Loading stage ---------- */
+  #loading .pulse-heart{
+    font-size:56px;
+    animation: pulse 1.1s ease-in-out infinite;
+    filter: drop-shadow(0 6px 16px rgba(194,59,87,0.35));
   }
+  @keyframes pulse{
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.18); }
+  }
+  #loading .loading-text{
+    margin-top:18px;
+    font-size:15px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--deep-rose);
+    opacity:0.8;
+  }
+  #loading .dots span{ animation: blink 1.4s infinite; }
+  #loading .dots span:nth-child(2){ animation-delay:0.2s; }
+  #loading .dots span:nth-child(3){ animation-delay:0.4s; }
+  @keyframes blink{ 0%,80%,100%{ opacity:0.2; } 40%{ opacity:1; } }
 
-  .eyebrow{
-    font-family: 'Caveat', cursive;
-    font-size: clamp(20px, 4vw, 28px);
-    color: var(--pink);
+  /* ---------- Game stage ---------- */
+  #game h1{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600;
+    font-size: 26px;
     margin: 0 0 6px 0;
-    letter-spacing: 0.5px;
+    color: var(--deep-rose);
+  }
+  #game p.sub{
+    margin:0 0 22px 0;
+    font-size:14px;
+    color: var(--plum);
+    opacity:0.75;
+    max-width:280px;
+  }
+  #game-field{
+    position:relative;
+    width:100%; max-width:420px; height:52vh; max-height:440px;
+    background: radial-gradient(circle at 50% 30%, rgba(255,255,255,0.55), rgba(255,255,255,0) 70%);
+    border-radius: 28px;
+    overflow:hidden;
+  }
+  .catch-heart{
+    position:absolute;
+    font-size:34px;
+    cursor:pointer;
+    user-select:none;
+    animation: drift 4.5s ease-in-out infinite;
+    filter: drop-shadow(0 4px 8px rgba(194,59,87,0.25));
+    transition: transform 0.15s ease;
+  }
+  .catch-heart:active{ transform: scale(1.3); }
+  @keyframes drift{
+    0%,100%{ transform: translateY(0px) translateX(0px); }
+    50%{ transform: translateY(-14px) translateX(8px); }
+  }
+  .pop{
+    animation: popOut 0.4s ease forwards !important;
+    pointer-events:none;
+  }
+  @keyframes popOut{
+    to{ transform: scale(1.8); opacity:0; }
   }
 
-  .headline{
-    font-size: clamp(24px, 5.4vw, 40px);
-    font-weight: 700;
-    line-height: 1.35;
-    max-width: 620px;
-    margin: 0 0 42px 0;
-  }
-
-  .headline .soft{
-    color: var(--ink-soft);
-    font-weight: 600;
-  }
-
-  .intro-card{
-    background: #fff;
-    border-radius: 32px;
-    padding: 56px 46px;
-    max-width: 560px;
-    width: 90vw;
-    box-shadow: 0 18px 0 var(--pink-soft), 0 30px 50px rgba(255,77,126,0.22);
-  }
-
-  .btn-row{
-    display: flex;
-    gap: 22px;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .btn{
-    border: none;
-    outline: none;
-    cursor: pointer;
-    font-family: 'Quicksand', sans-serif;
-    font-weight: 700;
-    font-size: 18px;
-    padding: 16px 38px;
-    border-radius: 999px;
-    background: #fff;
-    color: var(--ink-soft);
-    box-shadow: var(--shadow-btn-no);
-    transform: translateY(0) scale(1);
-    transition: transform .15s cubic-bezier(.34,1.56,.64,1), box-shadow .15s ease, background .2s ease, color .2s ease;
-  }
-
-  .btn:hover{
-    transform: translateY(-3px) scale(1.04);
-  }
-
-  .btn:active{
-    transform: translateY(1px) scale(0.97);
-  }
-
-  .btn:focus-visible{
-    transform: translateY(-4px) scale(1.08);
-  }
-
-  .btn-yes-see{
-    background: linear-gradient(180deg, #ff5c8a, var(--pink));
-    color: #fff;
-    box-shadow: var(--shadow-btn);
-  }
-
-  /* heartbeat pulse rhythm — lub-dub, like a real heartbeat */
-  .heartbeat{
-    --s: 1;
-    animation: heartbeatPulse 1.15s ease-in-out infinite;
-  }
-
-  @keyframes heartbeatPulse{
-    0%, 100%   { transform: scale(var(--s, 1)); }
-    14%        { transform: scale(calc(var(--s, 1) * 1.14)); }
-    28%        { transform: scale(var(--s, 1)); }
-    42%        { transform: scale(calc(var(--s, 1) * 1.14)); }
-    70%        { transform: scale(var(--s, 1)); }
-  }
-
-  .burst-emoji{
-    position: fixed;
-    pointer-events: none;
-    z-index: 999;
-    transition: transform 0.85s cubic-bezier(.25,.8,.4,1), opacity 0.85s ease-out;
-    will-change: transform, opacity;
-  }
-
-  .close-btn{
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    border: none;
-    background: #fff;
-    color: var(--ink-soft);
-    font-size: 18px;
-    line-height: 1;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 0 var(--pink-soft), 0 8px 14px rgba(255,77,126,0.2);
-    transition: transform .15s cubic-bezier(.34,1.56,.64,1), color .2s ease;
-  }
-
-  .close-btn:hover{
-    transform: translateY(-2px) scale(1.08);
-    color: var(--pink-dark);
-  }
-
-  .close-btn:active{
-    transform: translateY(1px) scale(0.95);
-  }
-
-  .back-btn{
-    position: absolute;
-    top: 18px;
-    right: 20px;
-    border: none;
-    background: #fff;
-    color: var(--pink-dark);
-    font-family: 'Quicksand', sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    padding: 8px 18px;
-    border-radius: 999px;
-    cursor: pointer;
-    box-shadow: 0 4px 0 var(--pink-soft), 0 8px 14px rgba(255,77,126,0.2);
-    transition: transform .15s cubic-bezier(.34,1.56,.64,1), color .2s ease;
-  }
-
-  .back-btn:hover{
-    transform: translateY(-2px) scale(1.06);
-  }
-
-  .back-btn:active{
-    transform: translateY(1px) scale(0.95);
-  }
-
-  .back-btn.top-left{
-    left: 20px;
-    right: auto;
-  }
-
-  .wanna-btn{
+  #progress-wrap{
     margin-top: 22px;
-    background: #fff;
-    color: var(--pink-dark);
-    border: 2px solid var(--pink-soft);
-    box-shadow: 0 6px 0 var(--pink-soft), 0 10px 16px rgba(255,77,126,0.18);
+    width: 220px;
+  }
+  #progress-track{
+    width:100%; height:8px;
+    background: rgba(194,59,87,0.15);
+    border-radius: 8px;
+    overflow:hidden;
+  }
+  #progress-fill{
+    height:100%;
+    width:0%;
+    background: linear-gradient(90deg, var(--rose), var(--gold));
+    border-radius:8px;
+    transition: width 0.35s ease;
+  }
+  #progress-label{
+    margin-top:8px;
+    font-size:13px;
+    color: var(--deep-rose);
+    font-weight:600;
+    letter-spacing:0.5px;
   }
 
-  /* ---- Blooming rose bouquet ---- */
-  .bouquet{
-    position: relative;
-    height: 130px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 2px;
-    margin: 6px auto 2px;
+  /* ---------- Reveal stage ---------- */
+  #reveal .eyebrow{
+    font-size:12px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    color: var(--gold);
+    font-weight:700;
+    margin-bottom: 10px;
   }
-
-  .bouquet .rose{
-    display: inline-block;
-    font-size: 40px;
-    opacity: 0;
-    transform: scale(0.2) rotate(-15deg) translateY(10px);
-    transform-origin: bottom center;
+  #reveal h1{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-weight:600;
+    font-size: 34px;
+    line-height:1.25;
+    margin: 0 0 18px 0;
+    color: var(--deep-rose);
+    max-width: 340px;
   }
-
-  .bouquet.bloom .rose{
-    animation: roseBloom .6s cubic-bezier(.34,1.56,.64,1) forwards;
-  }
-
-  .bouquet .rose:nth-child(1){ font-size: 32px; }
-  .bouquet.bloom .rose:nth-child(1){ animation-delay: .05s; }
-  .bouquet .rose:nth-child(2){ font-size: 42px; }
-  .bouquet.bloom .rose:nth-child(2){ animation-delay: .2s; }
-  .bouquet .rose:nth-child(3){ font-size: 50px; }
-  .bouquet.bloom .rose:nth-child(3){ animation-delay: .35s; }
-  .bouquet .rose:nth-child(4){ font-size: 42px; }
-  .bouquet.bloom .rose:nth-child(4){ animation-delay: .5s; }
-  .bouquet .rose:nth-child(5){ font-size: 32px; }
-  .bouquet.bloom .rose:nth-child(5){ animation-delay: .65s; }
-
-  .bouquet .bow{
-    position: absolute;
-    bottom: -6px;
-    font-size: 30px;
-    opacity: 0;
-    transform: scale(0.2);
-  }
-
-  .bouquet.bloom .bow{
-    animation: roseBloom .5s cubic-bezier(.34,1.56,.64,1) .82s forwards;
-  }
-
-  @keyframes roseBloom{
-    0%   { opacity: 0; transform: scale(0.2) rotate(-15deg) translateY(10px); }
-    60%  { opacity: 1; transform: scale(1.15) rotate(4deg) translateY(-4px); }
-    100% { opacity: 1; transform: scale(1) rotate(0deg) translateY(0); }
-  }
-
-  .rose-caption{
-    font-size: 18px;
-    font-weight: 700;
-    margin: 6px 0 4px 0;
-  }
-
-  #fingerOverlay{
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 70;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .15s ease;
-  }
-
-  #fingerOverlay.visible{
-    opacity: 1;
-  }
-
-  .finger-emoji{
-    font-size: 44px;
-    display: inline-block;
-    transform: scale(0);
-    filter: drop-shadow(0 10px 16px rgba(0,0,0,0.25));
-  }
-
-  .finger-emoji.pop{
-    animation: fingerPop .75s cubic-bezier(.34,1.56,.64,1) forwards;
-  }
-
-  @keyframes fingerPop{
-    0%   { transform: scale(0) rotate(-25deg); opacity: 0; }
-    55%  { transform: scale(1.6) rotate(10deg); opacity: 1; }
-    75%  { transform: scale(1.3) rotate(-4deg); opacity: 1; }
-    100% { transform: scale(1.4) rotate(0deg); opacity: 1; }
-  }
-
-  /* ---- Back-message overlay ---- */
-  #backOverlay, #roseOverlay{
-    position: fixed;
-    inset: 0;
-    background: rgba(255,255,255,0.35);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .4s ease;
-    z-index: 60;
-  }
-
-  #backOverlay.visible, #roseOverlay.visible{
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .back-message-card{
-    position: relative;
-    background: #fff;
-    border-radius: 32px;
-    padding: 50px 34px 30px;
-    max-width: 420px;
-    width: 88vw;
-    text-align: center;
-    box-shadow: 0 18px 0 var(--pink-soft), 0 30px 60px rgba(255,77,126,0.3);
-    transform: scale(0.6) translateY(20px);
-    opacity: 0;
-    transition: transform .5s cubic-bezier(.34,1.56,.64,1), opacity .35s ease;
-  }
-
-  .back-message-card.pop{
-    transform: scale(1) translateY(0);
-    opacity: 1;
-  }
-
-  .back-message-card p{
-    font-size: 18px;
-    line-height: 1.6;
-    font-weight: 600;
-    margin: 0 0 24px 0;
-  }
-
-  .message-slot-wrap{
-    position: relative;
-  }
-
-  .message-slot{
-    width: 100%;
-    min-height: 90px;
-    max-height: 160px;
-    border: 2px solid var(--pink-soft);
-    border-radius: 22px;
-    padding: 14px 56px 14px 16px;
-    font-family: 'Quicksand', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--ink);
-    resize: none;
-    outline: none;
-    box-shadow: 0 6px 0 var(--pink-soft), 0 10px 18px rgba(255,77,126,0.14);
-    transition: box-shadow .2s ease, border-color .2s ease;
-  }
-
-  .message-slot::placeholder{
-    color: var(--ink-soft);
-    font-weight: 500;
-  }
-
-  .message-slot:focus{
-    border-color: var(--pink);
-    box-shadow: 0 6px 0 var(--pink-soft), 0 12px 22px rgba(255,77,126,0.24);
-  }
-
-  .send-btn{
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
-    width: 40px;
-    height: 40px;
+  #reveal .letter{
+    background: transparent;
     border: none;
-    border-radius: 50%;
-    background: linear-gradient(180deg, #ff5c8a, var(--pink));
-    color: #fff;
-    font-size: 16px;
+    box-shadow: none;
+    padding: 0;
+    max-width: 360px;
+    width: 100%;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 5px 0 var(--pink-dark), 0 10px 16px rgba(255,77,126,0.3);
-    transition: transform .15s cubic-bezier(.34,1.56,.64,1);
+    user-select:none;
+    perspective: 1200px;
   }
-
-  .send-btn:hover{
-    transform: translateY(-2px) scale(1.08);
-  }
-
-  .send-btn:active{
-    transform: translateY(1px) scale(0.93);
-  }
-
-  .sent-note{
-    margin-top: 10px;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--pink-dark);
-    opacity: 0;
-    transition: opacity .3s ease;
-  }
-
-  .sent-note.show{
-    opacity: 1;
-  }
-
-  #noBtn{
+  #reveal .letter-inner{
     position: relative;
-    z-index: 5;
-    transition: transform .15s cubic-bezier(.34,1.56,.64,1), box-shadow .15s ease, top .35s cubic-bezier(.34,1.56,.64,1), left .35s cubic-bezier(.34,1.56,.64,1);
+    width: 100%;
+    min-height: 100%;
+    transition: transform 0.7s cubic-bezier(0.22,1,0.36,1);
+    transform-style: preserve-3d;
   }
-
-  #noBtn.roaming{
-    position: fixed;
+  #reveal .letter.gif-active .letter-inner{
+    transform: rotateY(180deg);
   }
-
-  /* ---------- PAGE 2 (the "card" the See it button grows into) ---------- */
-  #page2{
+  #reveal .letter-content,
+  #reveal .letter-gif{
+    backface-visibility: hidden;
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(232,96,123,0.25);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(194,59,87,0.12);
+    box-sizing: border-box;
+  }
+  #reveal .letter-content{
+    position: relative;
+    padding: 22px 24px;
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--plum);
+  }
+  #reveal .letter-gif{
     position: absolute;
     inset: 0;
-    display: flex;
+    transform: rotateY(180deg);
+    overflow: hidden;
+    padding: 16px;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content:center;
+    gap: 12px;
+  }
+  #reveal .letter-gif img{
+    width:100%;
+    flex: 1;
+    min-height: 0;
+    display:block;
+    object-fit: contain;
+    border-radius: 12px;
+  }
+  #want-more-btn{
+    flex-shrink: 0;
+    padding: 9px 20px;
+    background: linear-gradient(90deg, var(--rose), var(--deep-rose));
+    color: var(--white);
+    border: none;
+    border-radius: 999px;
+    font-family:'Quicksand', sans-serif;
+    font-weight:600;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(194,59,87,0.3);
+    transition: transform 0.15s ease;
+  }
+  #want-more-btn:active{ transform: scale(0.95); }
+
+  /* ---------- Popup modal ---------- */
+  #modal-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(74,36,56,0.35);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: none;
     align-items: center;
     justify-content: center;
+    z-index: 50;
+    padding: 24px;
     opacity: 0;
-    pointer-events: none;
-    transition: opacity .25s ease;
+    transition: opacity 0.3s ease;
   }
-
-  #page2.visible{
+  #modal-overlay.active{
+    display: flex;
+  }
+  #modal-overlay.show{
     opacity: 1;
-    pointer-events: auto;
   }
-
-  .card{
-    position: relative;
-    background: #fff;
-    border-radius: 32px;
-    padding: 56px 46px;
-    max-width: 480px;
-    width: 88vw;
+  #modal-card{
+    background: var(--white);
+    border-radius: 24px;
+    padding: 36px 30px;
+    max-width: 300px;
+    width: 100%;
     text-align: center;
-    box-shadow: 0 18px 0 var(--pink-soft), 0 30px 50px rgba(255,77,126,0.22);
-    transform: scale(0.4);
-    opacity: 0;
-    transition: transform .45s cubic-bezier(.34,1.56,.64,1), opacity .3s ease;
+    box-shadow: 0 20px 50px rgba(74,36,56,0.35);
+    transform: scale(0.85);
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
   }
-
-  .card.pop{
+  #modal-overlay.show #modal-card{
     transform: scale(1);
-    opacity: 1;
   }
-
-  .card h2{
-    font-size: clamp(22px, 4.6vw, 30px);
-    margin: 0 0 34px 0;
+  #modal-card .modal-emoji{
+    font-size: 40px;
+    margin-bottom: 12px;
+  }
+  #modal-card .modal-text{
+    font-family:'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--deep-rose);
     line-height: 1.4;
   }
-
-  .card-row{
-    display: flex;
-    gap: 18px;
-    justify-content: center;
-    flex-wrap: wrap;
+  #modal-close{
+    margin-top: 20px;
+    padding: 9px 26px;
+    background: var(--blush-soft);
+    color: var(--deep-rose);
+    border: 1px solid rgba(232,96,123,0.3);
+    border-radius: 999px;
+    font-family:'Quicksand', sans-serif;
+    font-weight:600;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .tap-sign{
+    margin-top:10px;
+    font-size:13px;
+    color: var(--deep-rose);
+    opacity:0.7;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+  }
+  .tap-sign .tap-emoji{
+    display:inline-block;
+    animation: tapBounce 1.3s ease-in-out infinite;
+  }
+  @keyframes tapBounce{
+    0%,100%{ transform: translateY(0); }
+    50%{ transform: translateY(-4px); }
+  }
+  #reveal .signature{
+    margin-top:14px;
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:18px;
+    color: var(--deep-rose);
   }
 
-  #yesLoveBtn{
-    transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .15s ease, background .2s ease, color .2s ease;
+  #counter-box{
+    margin-top: 26px;
+    display:flex;
+    gap: 14px;
+  }
+  .counter-cell{
+    background: var(--white);
+    border-radius: 14px;
+    padding: 10px 14px;
+    min-width: 58px;
+    box-shadow: 0 6px 16px rgba(194,59,87,0.15);
+  }
+  .counter-num{
+    font-size: 22px;
+    font-weight:700;
+    color: var(--deep-rose);
+    font-family:'Cormorant Garamond', serif;
+  }
+  .counter-label{
+    font-size: 10px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color: var(--plum);
+    opacity:0.6;
+    margin-top:2px;
   }
 
-  /* ---------- FINAL OVERLAY ---------- */
-  #finalOverlay{
-    position: fixed;
-    inset: 0;
-    background: rgba(255,255,255,0.35);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .4s ease;
-    z-index: 50;
+  .tap-hint{
+    margin-top: 26px;
+    font-size:13px;
+    opacity:0.55;
   }
 
-  #finalOverlay.visible{
-    opacity: 1;
-    pointer-events: auto;
+  /* burst confetti hearts on reveal */
+  .burst-heart{
+    position:absolute;
+    font-size:20px;
+    color: var(--rose);
+    opacity:0.9;
+    animation: burstFall 2.4s ease-out forwards;
+    pointer-events:none;
+  }
+  @keyframes burstFall{
+    0%{ transform: translate(0,0) scale(0.6) rotate(0deg); opacity:1; }
+    100%{ transform: translate(var(--bx,0px), var(--by,300px)) scale(1) rotate(var(--br,180deg)); opacity:0; }
   }
 
-  .final-card{
-    position: relative;
-    background: #fff;
-    border-radius: 32px;
-    padding: 52px 40px 44px;
-    max-width: 420px;
-    width: 86vw;
-    text-align: center;
-    box-shadow: 0 18px 0 var(--pink-soft), 0 30px 60px rgba(255,77,126,0.3);
-    transform: scale(0.6) translateY(20px);
-    opacity: 0;
-    transition: transform .5s cubic-bezier(.34,1.56,.64,1), opacity .35s ease;
+  /* ---------- Photo gallery swiper ---------- */
+  #gallery-wrap{
+    margin: 22px 0 6px 0;
+    width: 100%;
+    max-width: 320px;
+  }
+  #gallery{
+    position:relative;
+    width:100%;
+    aspect-ratio: 4/5;
+    border-radius: 22px;
+    overflow:hidden;
+    box-shadow: 0 12px 30px rgba(194,59,87,0.2);
+    background: var(--white);
+    cursor: grab;
+    user-select:none;
+  }
+  #gallery:active{ cursor: grabbing; }
+  #gallery-track{
+    display:flex;
+    width:200%;
+    height:100%;
+    transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
+  }
+  .gallery-slide{
+    width:50%;
+    height:100%;
+    flex-shrink:0;
+    position:relative;
+  }
+  .gallery-slide img{
+    width:100%; height:100%;
+    object-fit: cover;
+    display:block;
+    pointer-events:none;
+  }
+  .gallery-slide .ph-placeholder{
+    width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column;
+    gap:8px;
+    background: linear-gradient(145deg, var(--blush-soft), var(--blush));
+    color: var(--deep-rose);
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:0.5px;
+  }
+  .ph-placeholder .ph-icon{ font-size:30px; opacity:0.7; }
+
+  #gallery-dots{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    margin-top:12px;
+  }
+  .gallery-dot{
+    width:7px; height:7px;
+    border-radius:50%;
+    background: rgba(194,59,87,0.25);
+    transition: all 0.3s ease;
+    cursor:pointer;
+  }
+  .gallery-dot.active{
+    width:20px;
+    border-radius:5px;
+    background: var(--deep-rose);
   }
 
-  .final-card.pop{
-    transform: scale(1) translateY(0);
-    opacity: 1;
-  }
-
-  .final-card h2{
-    font-family: 'Caveat', cursive;
-    font-size: 44px;
-    color: var(--pink-dark);
-    margin: 0 0 18px 0;
-  }
-
-  /* ---- Illustrated kissing-cat sticker ---- */
-  .cat-sticker{
-    width: 128px;
-    height: 128px;
-    margin: 4px auto 6px;
-    animation: catSway 2.4s ease-in-out infinite;
-    filter: drop-shadow(0 10px 14px rgba(255,77,126,0.28));
-  }
-
-  @keyframes catSway{
-    0%, 100% { transform: rotate(-4deg) translateY(0); }
-    50%      { transform: rotate(4deg) translateY(-3px); }
-  }
-
-  .cat-mouth{
-    animation: catPucker 1.2s ease-in-out infinite;
-    transform-origin: 64px 78px;
-  }
-
-  @keyframes catPucker{
-    0%, 60%, 100% { transform: scale(1); }
-    20%           { transform: scale(1.3); }
-    35%           { transform: scale(0.85); }
-  }
-
-  .kiss-heart{
-    opacity: 0;
-    animation: kissHeartFly 1.2s ease-out infinite;
-  }
-
-  @keyframes kissHeartFly{
-    0%   { opacity: 0; transform: translate(0, 0) scale(0.3); }
-    15%  { opacity: 1; transform: translate(6px, -4px) scale(0.8); }
-    100% { opacity: 0; transform: translate(30px, -34px) scale(1.15); }
-  }
-
-  .heart-wrap{
-    position: relative;
-    height: 110px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .heart{
-    font-size: 64px;
-    display: inline-block;
-    animation: beat 1.05s ease-in-out infinite;
-    filter: drop-shadow(0 6px 10px rgba(255,77,126,0.4));
-  }
-
-  @keyframes beat{
-    0%, 100% { transform: scale(1); }
-    15% { transform: scale(1.25); }
-    30% { transform: scale(0.92); }
-    45% { transform: scale(1.15); }
-    60% { transform: scale(1); }
-  }
-
-  .float-emoji{
-    position: absolute;
-    bottom: 10px;
-    font-size: 20px;
-    opacity: 0;
-    animation: floatUp 2.6s ease-in infinite;
-  }
-
-  @keyframes floatUp{
-    0%{ opacity: 0; transform: translateY(0) translateX(0) scale(0.6) rotate(0deg); }
-    15%{ opacity: 1; }
-    100%{ opacity: 0; transform: translateY(-120px) translateX(var(--drift, 20px)) scale(1.1) rotate(20deg); }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .heart, .float-emoji, .btn, #noBtn, .cat-sticker, .cat-mouth, .kiss-heart, .bouquet .rose, .bouquet .bow, .finger-emoji{
-      animation: none !important;
-      transition: none !important;
-    }
+    @media (prefers-reduced-motion: reduce){
+    .ambient-heart, .catch-heart, .pulse-heart, #loading .dots span{ animation: none !important; }
   }
 </style>
 </head>
 <body>
 
-<div class="stage">
+<div id="app">
+  <div id="ambient-layer"></div>
 
-  <!-- PAGE 1 -->
-  <div id="page1">
-    <div class="intro-card">
-      <p class="eyebrow">psst... come here for a sec</p>
-      <h1 class="headline">
-        Hello, I'm going to ask a<br>
-        <span class="soft">really important</span> question.<br>
-        Do you want to see it?
-      </h1>
-      <div class="btn-row">
-        <button class="btn btn-yes-see heartbeat" id="seeBtn">See it</button>
-        <button class="btn" id="noBtn">No</button>
+  <!-- STAGE 1: LOADING -->
+  <div class="stage active" id="loading">
+    <div class="pulse-heart">💗</div>
+    <div class="loading-text">Preparing something for you<span class="dots"><span>.</span><span>.</span><span>.</span></span></div>
+  </div>
+
+  <!-- STAGE 2: GAME -->
+  <div class="stage" id="game">
+    <h1>Catch a little love</h1>
+    <p class="sub">Tap 10 floating hearts before your surprise unlocks 💕</p>
+    <div id="game-field"></div>
+    <div id="progress-wrap">
+      <div id="progress-track"><div id="progress-fill"></div></div>
+      <div id="progress-label">0 / 10 hearts</div>
+    </div>
+  </div>
+
+  <!-- STAGE 3: REVEAL -->
+  <div class="stage" id="reveal">
+    <div class="eyebrow">You found them all</div>
+    <div id="gallery-wrap">
+      <div id="gallery">
+        <div id="gallery-track">
+          <div class="gallery-slide">
+            <img src="img/1.jpeg" alt="Us">
+          </div>
+          <div class="gallery-slide">
+            <img src="img/2.jpeg" alt="Us">
+          </div>
+        </div>
+      </div>
+      <div id="gallery-dots">
+        <div class="gallery-dot active" data-idx="0"></div>
+        <div class="gallery-dot" data-idx="1"></div>
       </div>
     </div>
-  </div>
 
-  <!-- PAGE 2 (grown card) -->
-  <div id="page2">
-    <div class="card" id="loveCard">
-      <button class="back-btn top-left" id="restartBtn" style="display:none;">↺ Restart</button>
-      <button class="back-btn" id="backBtn" style="display:none;">Wanna Breakup</button>
-      <h2>Do you really love me? 🥺</h2>
-      <div class="card-row">
-        <button class="btn btn-yes-see heartbeat" id="yesLoveBtn">Yes</button>
-        <button class="btn" id="noLoveBtn">No</button>
+    <div class="letter" id="letter-text">
+      <div class="letter-inner">
+        <div class="letter-content">
+        
+          Thank you for being my calm, my laugh, my favourite person to text at 1am about nothing at all.
+          Here's to many more days, many more hearts, and many more little surprises for my love. Mn Thamuseta Adrei Modiye💗(Meka ara Meme eke thaletama kiyam. thekotay){Ho.Ma.Tha.Ga.Yu:- Me sukuruttan dammata mn adre poddai😏}
+        </div>
+        <div class="letter-gif">
+          <!-- love.gif should be placed in the same folder as this HTML file -->
+          <img src="love.gif" alt="Love">
+          <button id="want-more-btn">Want more?</button>
+        </div>
       </div>
     </div>
-  </div>
+    <div class="tap-sign"><span class="tap-emoji">👆</span> Tap here</div>
+    <div class="signature">— Always yours</div>
 
-</div>
-
-<!-- FINAL OVERLAY -->
-<div id="finalOverlay">
-  <div class="final-card" id="finalCard">
-    <button class="back-btn top-left" id="backFinalBtn">← Back</button>
-    <button class="close-btn" id="closeFinalBtn" aria-label="Close">✕</button>
-
-    <svg class="cat-sticker" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-label="Cute cat blowing a kiss">
-      <!-- ears -->
-      <path d="M28 40 L18 8 L52 30 Z" fill="#ffb6c9"/>
-      <path d="M100 40 L110 8 L76 30 Z" fill="#ffb6c9"/>
-      <path d="M31 36 L24 16 L48 30 Z" fill="#ff8aa8"/>
-      <path d="M97 36 L104 16 L80 30 Z" fill="#ff8aa8"/>
-      <!-- face -->
-      <circle cx="64" cy="68" r="46" fill="#fff1f4"/>
-      <circle cx="64" cy="68" r="46" fill="none" stroke="#ffb6c9" stroke-width="3"/>
-      <!-- blush -->
-      <ellipse cx="32" cy="78" rx="10" ry="6" fill="#ffc2d1" opacity="0.85"/>
-      <ellipse cx="96" cy="78" rx="10" ry="6" fill="#ffc2d1" opacity="0.85"/>
-      <!-- closed happy eyes -->
-      <path d="M40 60 Q47 52 54 60" fill="none" stroke="#2d2a32" stroke-width="3.5" stroke-linecap="round"/>
-      <path d="M74 60 Q81 52 88 60" fill="none" stroke="#2d2a32" stroke-width="3.5" stroke-linecap="round"/>
-      <!-- whiskers -->
-      <path d="M8 66 L30 68 M8 76 L30 74" stroke="#f2a7bd" stroke-width="2.5" stroke-linecap="round"/>
-      <path d="M120 66 L98 68 M120 76 L98 74" stroke="#f2a7bd" stroke-width="2.5" stroke-linecap="round"/>
-      <!-- nose -->
-      <path d="M60 70 L68 70 L64 75 Z" fill="#ff6f91"/>
-      <!-- puckered kissing mouth -->
-      <g class="cat-mouth">
-        <ellipse cx="64" cy="80" rx="6" ry="5.5" fill="#ff6f91"/>
-      </g>
-      <!-- little heart flying from the kiss -->
-      <text class="kiss-heart" x="70" y="72" font-size="16">💕</text>
-    </svg>
-
-    <h2>I knew it.</h2>
-    <div class="heart-wrap" id="heartWrap">
-      <span class="heart">❤️</span>
+    <div class="eyebrow" style="margin-top:24px;">Since March 19, 2026</div>
+    <div id="counter-box">
+      <div class="counter-cell"><div class="counter-num" id="c-years">0</div><div class="counter-label">Years</div></div>
+      <div class="counter-cell"><div class="counter-num" id="c-months">0</div><div class="counter-label">Months</div></div>
+      <div class="counter-cell"><div class="counter-num" id="c-days">0</div><div class="counter-label">Days</div></div>
     </div>
-    <button class="btn wanna-btn" id="wannaSurpriseBtn">Wanna Surprise</button>
+    <div id="counter-box" style="margin-top:12px;">
+      <div class="counter-cell"><div class="counter-num" id="c-hours">0</div><div class="counter-label">Hours</div></div>
+      <div class="counter-cell"><div class="counter-num" id="c-mins">0</div><div class="counter-label">Mins</div></div>
+      <div class="counter-cell"><div class="counter-num" id="c-secs">0</div><div class="counter-label">Secs</div></div>
+    </div>
+    <div class="tap-hint">💗 counting every second since that day</div>
   </div>
 </div>
 
-<!-- ROSE SURPRISE OVERLAY -->
-<div id="roseOverlay">
-  <div class="back-message-card" id="roseCard">
-    <button class="back-btn" id="roseBackBtn">← Back</button>
-    <div class="bouquet" id="bouquet">
-      <span class="rose">🌹</span>
-      <span class="rose">🌹</span>
-      <span class="rose">🌹</span>
-      <span class="rose">🌹</span>
-      <span class="rose">🌹</span>
-      <span class="bow">🎀</span>
-    </div>
-    <p class="rose-caption">Here, this is for U 😏</p>
-  </div>
-</div>
-
-<!-- REACTION EMOJI OVERLAY (plays before the message-slot card) -->
-<div id="fingerOverlay">
-  <span class="finger-emoji" id="fingerEmoji">🖕</span>
-</div>
-
-<!-- BACK-MESSAGE OVERLAY -->
-<div id="backOverlay">
-  <div class="back-message-card" id="backMessageCard">
-    <button class="close-btn" id="closeBackBtn" aria-label="Close">✕</button>
-    <p>Yes dunnanm Idam, Dn Karanna deyak na. Ubrge Karume thama 😊</p>
-    <div class="message-slot-wrap">
-      <textarea class="message-slot" id="messageSlot" placeholder="Type your message..."></textarea>
-      <button class="send-btn" id="sendBtn" aria-label="Send message">➤</button>
-    </div>
-    <div class="sent-note" id="sentNote">Sent 💌</div>
+<div id="modal-overlay">
+  <div id="modal-card">
+    <div class="modal-emoji">😏👌</div>
+    <div class="modal-text">Danata ochcharay hum, atha ridenw</div>
+    <button id="modal-close">hako 🙈</button>
   </div>
 </div>
 
 <script>
-  const noBtn = document.getElementById('noBtn');
-  const seeBtn = document.getElementById('seeBtn');
-  const page1 = document.getElementById('page1');
-  const page2 = document.getElementById('page2');
-  const loveCard = document.getElementById('loveCard');
-  const yesLoveBtn = document.getElementById('yesLoveBtn');
-  const noLoveBtn = document.getElementById('noLoveBtn');
-  const finalOverlay = document.getElementById('finalOverlay');
-  const finalCard = document.getElementById('finalCard');
-  const heartWrap = document.getElementById('heartWrap');
-  const closeFinalBtn = document.getElementById('closeFinalBtn');
-  const backFinalBtn = document.getElementById('backFinalBtn');
-  const wannaSurpriseBtn = document.getElementById('wannaSurpriseBtn');
-  const roseOverlay = document.getElementById('roseOverlay');
-  const roseCard = document.getElementById('roseCard');
-  const roseBackBtn = document.getElementById('roseBackBtn');
-  const bouquet = document.getElementById('bouquet');
-  const backBtn = document.getElementById('backBtn');
-  const restartBtn = document.getElementById('restartBtn');
-  const fingerOverlay = document.getElementById('fingerOverlay');
-  const fingerEmoji = document.getElementById('fingerEmoji');
-  const backOverlay = document.getElementById('backOverlay');
-  const backMessageCard = document.getElementById('backMessageCard');
-  const closeBackBtn = document.getElementById('closeBackBtn');
-  const messageSlot = document.getElementById('messageSlot');
-  const sendBtn = document.getElementById('sendBtn');
-  const sentNote = document.getElementById('sentNote');
+/* ============================================================
+   EASY CUSTOMIZATION — edit these values for your surprise
+   ============================================================ */
+const START_DATE = "2026-03-19";   // <-- change to your actual relationship start date (YYYY-MM-DD)
+const LOVE_LETTER = document.getElementById('letter-text').innerHTML; // edit the HTML above directly instead
+const SIGNATURE = "— Always yours"; // edit the .signature text above directly instead
+/* ============================================================ */
 
-  /* ---- Burst of pink hearts & flowers from a button, gone after each click ---- */
-  const burstEmojis = ['💗','💕','💖','🌸','🌷','🌺','💐'];
+// ---------- Ambient floating hearts (all stages) ----------
+const ambientLayer = document.getElementById('ambient-layer');
+const heartChars = ['💗','💕','💖','🌸'];
+function spawnAmbientHeart(){
+  const el = document.createElement('div');
+  el.className = 'ambient-heart';
+  el.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+  el.style.left = Math.random()*100 + '%';
+  el.style.setProperty('--drift', (Math.random()*60-30)+'px');
+  el.style.fontSize = (14 + Math.random()*16) + 'px';
+  const duration = 7 + Math.random()*6;
+  el.style.animationDuration = duration + 's';
+  ambientLayer.appendChild(el);
+  setTimeout(()=> el.remove(), duration*1000 + 500);
+}
+setInterval(spawnAmbientHeart, 900);
+for(let i=0;i<5;i++) setTimeout(spawnAmbientHeart, i*300);
 
-  function burstFrom(el){
-    const rect = el.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const count = 10;
+// ---------- Stage control ----------
+const stages = { loading: document.getElementById('loading'), game: document.getElementById('game'), reveal: document.getElementById('reveal') };
+function goTo(stageName){
+  Object.values(stages).forEach(s => s.classList.remove('active'));
+  stages[stageName].classList.add('active');
+}
 
-    for(let i = 0; i < count; i++){
-      const span = document.createElement('span');
-      span.className = 'burst-emoji';
-      span.textContent = burstEmojis[Math.floor(Math.random() * burstEmojis.length)];
-      span.style.left = cx + 'px';
-      span.style.top = cy + 'px';
-      span.style.fontSize = (14 + Math.random() * 12) + 'px';
-      span.style.transform = 'translate(-50%, -50%) scale(0.4)';
-      span.style.opacity = '1';
-      document.body.appendChild(span);
+// Loading -> Game after short delay
+setTimeout(()=> goTo('game'), 2400);
 
-      const angle = Math.random() * Math.PI * 2;
-      const dist = 55 + Math.random() * 75;
-      const dx = Math.cos(angle) * dist;
-      const dy = Math.sin(angle) * dist - 30;
-      const rot = (Math.random() * 300 - 150).toFixed(0);
-      const scale = (0.7 + Math.random() * 0.8).toFixed(2);
+// ---------- Mini game: catch the hearts ----------
+const field = document.getElementById('game-field');
+const progressFill = document.getElementById('progress-fill');
+const progressLabel = document.getElementById('progress-label');
+const TARGET = 10;
+let caught = 0;
+let heartsOnScreen = 0;
+const MAX_ON_SCREEN = 4;
 
-      requestAnimationFrame(() => {
-        span.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${scale}) rotate(${rot}deg)`;
-        span.style.opacity = '0';
-      });
+function spawnCatchHeart(){
+  if (caught >= TARGET) return;
+  if (heartsOnScreen >= MAX_ON_SCREEN) return;
+  heartsOnScreen++;
+  const el = document.createElement('div');
+  el.className = 'catch-heart';
+  el.textContent = ['💗','💖','💕'][Math.floor(Math.random()*3)];
+  const fw = field.clientWidth, fh = field.clientHeight;
+  el.style.left = Math.max(10, Math.random()*(fw-50)) + 'px';
+  el.style.top = Math.max(10, Math.random()*(fh-50)) + 'px';
+  el.style.animationDuration = (3.5 + Math.random()*2) + 's';
 
-      setTimeout(() => span.remove(), 900);
+  const onTap = (e) => {
+    e.preventDefault();
+    if (el.classList.contains('pop')) return;
+    el.classList.add('pop');
+    caught++;
+    heartsOnScreen--;
+    progressFill.style.width = Math.min(100,(caught/TARGET)*100) + '%';
+    progressLabel.textContent = caught + ' / ' + TARGET + ' hearts';
+    setTimeout(()=> el.remove(), 400);
+    if (caught >= TARGET){
+      setTimeout(()=> {
+        goTo('reveal');
+        startCounter();
+        launchBurst();
+        initGallery();
+      }, 500);
+    } else {
+      setTimeout(spawnCatchHeart, 300);
     }
+  };
+  el.addEventListener('click', onTap);
+  el.addEventListener('touchstart', onTap, {passive:false});
+  field.appendChild(el);
+
+  // auto-replace heart if it drifts too long unclicked
+  setTimeout(()=>{
+    if (el.parentNode && !el.classList.contains('pop')){
+      el.remove();
+      heartsOnScreen--;
+      if (caught < TARGET) spawnCatchHeart();
+    }
+  }, 6000);
+}
+for(let i=0;i<MAX_ON_SCREEN;i++) setTimeout(spawnCatchHeart, i*350 + 2600);
+
+// ---------- "Want more?" popup modal ----------
+const wantMoreBtn = document.getElementById('want-more-btn');
+const modalOverlay = document.getElementById('modal-overlay');
+const modalClose = document.getElementById('modal-close');
+
+function openModal(){
+  modalOverlay.classList.add('active');
+  requestAnimationFrame(()=> modalOverlay.classList.add('show'));
+}
+function closeModal(){
+  modalOverlay.classList.remove('show');
+  setTimeout(()=> modalOverlay.classList.remove('active'), 300);
+}
+
+wantMoreBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  openModal();
+});
+modalClose.addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', (e)=>{
+  if (e.target === modalOverlay) closeModal();
+});
+
+// ---------- Tap letter card to show love.gif ----------
+const letterCard = document.getElementById('letter-text');
+letterCard.addEventListener('click', ()=>{
+  letterCard.classList.toggle('gif-active');
+});
+
+// ---------- Photo gallery: auto-swipe + manual swipe ----------
+const galleryTrack = document.getElementById('gallery-track');
+const galleryEl = document.getElementById('gallery');
+const dots = document.querySelectorAll('.gallery-dot');
+let galleryIndex = 0;
+const SLIDE_COUNT = 2;
+let autoSwipeTimer = null;
+
+function setGallerySlide(idx){
+  galleryIndex = ((idx % SLIDE_COUNT) + SLIDE_COUNT) % SLIDE_COUNT;
+  galleryTrack.style.transform = `translateX(-${galleryIndex * 50}%)`;
+  dots.forEach((d,i)=> d.classList.toggle('active', i === galleryIndex));
+}
+
+function startAutoSwipe(){
+  stopAutoSwipe();
+  autoSwipeTimer = setInterval(()=> setGallerySlide(galleryIndex + 1), 3500);
+}
+function stopAutoSwipe(){
+  if (autoSwipeTimer) clearInterval(autoSwipeTimer);
+}
+
+dots.forEach(dot=>{
+  dot.addEventListener('click', ()=>{
+    setGallerySlide(parseInt(dot.dataset.idx));
+    startAutoSwipe(); // reset timer after manual interaction
+  });
+});
+
+// Manual swipe (touch + mouse drag)
+let dragStartX = 0;
+let dragging = false;
+let dragDelta = 0;
+
+function dragStart(x){
+  dragging = true;
+  dragStartX = x;
+  dragDelta = 0;
+  stopAutoSwipe();
+  galleryTrack.style.transition = 'none';
+}
+function dragMove(x){
+  if (!dragging) return;
+  dragDelta = x - dragStartX;
+  const basePercent = -(galleryIndex * 50);
+  const dragPercent = (dragDelta / galleryEl.clientWidth) * 50;
+  galleryTrack.style.transform = `translateX(${basePercent + dragPercent}%)`;
+}
+function dragEnd(){
+  if (!dragging) return;
+  dragging = false;
+  galleryTrack.style.transition = 'transform 0.5s cubic-bezier(0.22,1,0.36,1)';
+  const threshold = galleryEl.clientWidth * 0.15;
+  if (dragDelta < -threshold){
+    setGallerySlide(galleryIndex + 1);
+  } else if (dragDelta > threshold){
+    setGallerySlide(galleryIndex - 1);
+  } else {
+    setGallerySlide(galleryIndex); // snap back
   }
+  startAutoSwipe();
+}
 
-  /* ---- Page 1: "No" button runs away ---- */
-  function moveNoRandomly(){
-    burstFrom(noBtn);
+galleryEl.addEventListener('touchstart', e => dragStart(e.touches[0].clientX), {passive:true});
+galleryEl.addEventListener('touchmove', e => dragMove(e.touches[0].clientX), {passive:true});
+galleryEl.addEventListener('touchend', dragEnd);
 
-    const btnRect = noBtn.getBoundingClientRect();
-    const w = btnRect.width || 120;
-    const h = btnRect.height || 56;
-    const margin = 20;
+galleryEl.addEventListener('mousedown', e => { dragStart(e.clientX); e.preventDefault(); });
+window.addEventListener('mousemove', e => dragMove(e.clientX));
+window.addEventListener('mouseup', dragEnd);
 
-    const maxX = window.innerWidth - w - margin;
-    const maxY = window.innerHeight - h - margin;
+// Start gallery once reveal stage is shown
+function initGallery(){
+  setGallerySlide(0);
+  startAutoSwipe();
+}
 
-    const randX = Math.max(margin, Math.random() * maxX);
-    const randY = Math.max(margin, Math.random() * maxY);
+let timelineInterval = null;
+function startCounter(){
+  updateTimeline(); // show immediately, no delay
+  timelineInterval = setInterval(updateTimeline, 1000);
+}
+function updateTimeline(){
+  const start = new Date(START_DATE);
+  const now = new Date();
 
-    if(!noBtn.classList.contains('roaming')){
-      noBtn.classList.add('roaming');
-    }
-    noBtn.style.left = randX + 'px';
-    noBtn.style.top = randY + 'px';
+  let years = now.getFullYear() - start.getFullYear();
+  let months = now.getMonth() - start.getMonth();
+  let days = now.getDate() - start.getDate();
+  if (days < 0){
+    months -= 1;
+    const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+    days += prevMonth.getDate();
   }
+  if (months < 0){ months += 12; years -= 1; }
 
-  noBtn.addEventListener('click', moveNoRandomly);
-  noBtn.addEventListener('touchstart', function(e){ e.preventDefault(); moveNoRandomly(); }, { passive:false });
+  // live hours/minutes/seconds ticking every second
+  const diffMs = now - start;
+  const totalSeconds = Math.max(0, Math.floor(diffMs / 1000));
+  const hours = Math.floor(totalSeconds / 3600) % 24;
+  const mins = Math.floor(totalSeconds / 60) % 60;
+  const secs = totalSeconds % 60;
 
-  /* ---- "See it" grows into the love-question card ---- */
-  seeBtn.addEventListener('click', () => {
-    burstFrom(seeBtn);
-    page1.classList.add('hidden');
-    page2.classList.add('visible');
-    requestAnimationFrame(() => {
-      loveCard.classList.add('pop');
-    });
-  });
+  document.getElementById('c-years').textContent = years;
+  document.getElementById('c-months').textContent = months;
+  document.getElementById('c-days').textContent = days;
+  document.getElementById('c-hours').textContent = String(hours).padStart(2,'0');
+  document.getElementById('c-mins').textContent = String(mins).padStart(2,'0');
+  document.getElementById('c-secs').textContent = String(secs).padStart(2,'0');
+}
 
-  /* ---- "Do you really love me?" No button: Yes button grows each tap, keeps its heartbeat rhythm ---- */
-  let yesScale = 1;
-  noLoveBtn.addEventListener('click', () => {
-    burstFrom(noLoveBtn);
-    yesScale += 0.22;
-    yesLoveBtn.style.setProperty('--s', yesScale);
-    yesLoveBtn.style.zIndex = 10;
-  });
-
-  /* ---- Yes -> blurred overlay + "I knew it" + beating heart ---- */
-  const floatEmojis = ['❤️','💕','💖','😍','💗'];
-
-  function spawnFloatingEmoji(){
-    const span = document.createElement('span');
-    span.className = 'float-emoji';
-    span.textContent = floatEmojis[Math.floor(Math.random() * floatEmojis.length)];
-    const drift = (Math.random() * 100 - 50) + 'px';
-    span.style.setProperty('--drift', drift);
-    span.style.left = (35 + Math.random() * 30) + '%';
-    span.style.animationDuration = (2 + Math.random() * 1.4) + 's';
-    heartWrap.appendChild(span);
-    setTimeout(() => span.remove(), 3600);
+// ---------- Burst of hearts on reveal ----------
+function launchBurst(){
+  const revealEl = document.getElementById('reveal');
+  for(let i=0;i<24;i++){
+    setTimeout(()=>{
+      const el = document.createElement('div');
+      el.className = 'burst-heart';
+      el.textContent = ['💗','💕','🌸','💖'][Math.floor(Math.random()*4)];
+      el.style.left = (45 + Math.random()*10) + '%';
+      el.style.top = '35%';
+      el.style.setProperty('--bx', (Math.random()*300-150)+'px');
+      el.style.setProperty('--by', (200+Math.random()*200)+'px');
+      el.style.setProperty('--br', (Math.random()*360)+'deg');
+      revealEl.appendChild(el);
+      setTimeout(()=> el.remove(), 2600);
+    }, i*40);
   }
-
-  let floatingInterval = null;
-
-  yesLoveBtn.addEventListener('click', () => {
-    burstFrom(yesLoveBtn);
-    backBtn.style.display = 'inline-flex';
-    restartBtn.style.display = 'inline-flex';
-    finalOverlay.classList.add('visible');
-    requestAnimationFrame(() => finalCard.classList.add('pop'));
-    if(!floatingInterval){
-      spawnFloatingEmoji();
-      floatingInterval = setInterval(spawnFloatingEmoji, 450);
-    }
-  });
-
-  /* ---- Shared: return to the "Do you really love me?" card from any overlay on top of it ---- */
-  function goToLoveCard(){
-    finalOverlay.classList.remove('visible');
-    finalCard.classList.remove('pop');
-    roseOverlay.classList.remove('visible');
-    roseCard.classList.remove('pop');
-    if(floatingInterval){
-      clearInterval(floatingInterval);
-      floatingInterval = null;
-    }
-    yesScale = 1;
-    yesLoveBtn.style.setProperty('--s', 1);
-    yesLoveBtn.style.zIndex = '';
-  }
-
-  backFinalBtn.addEventListener('click', () => {
-    burstFrom(backFinalBtn);
-    goToLoveCard();
-  });
-
-  /* ---- Wanna Surprise -> blooming rose bouquet card ---- */
-  wannaSurpriseBtn.addEventListener('click', () => {
-    burstFrom(wannaSurpriseBtn);
-    roseOverlay.classList.add('visible');
-    requestAnimationFrame(() => roseCard.classList.add('pop'));
-
-    bouquet.classList.remove('bloom');
-    void bouquet.offsetWidth; // restart the bloom animation each time it opens
-    bouquet.classList.add('bloom');
-  });
-
-  roseBackBtn.addEventListener('click', () => {
-    burstFrom(roseBackBtn);
-    goToLoveCard();
-  });
-
-  /* ---- Close the final popup: also reset the Yes button back to its original size ---- */
-  closeFinalBtn.addEventListener('click', () => {
-    finalOverlay.classList.remove('visible');
-    finalCard.classList.remove('pop');
-    if(floatingInterval){
-      clearInterval(floatingInterval);
-      floatingInterval = null;
-    }
-    yesScale = 1;
-    yesLoveBtn.style.setProperty('--s', 1);
-    yesLoveBtn.style.zIndex = '';
-  });
-
-  /* ---- "Wanna Breakup" button: flash a middle-finger reaction, then pop the message-slot card ---- */
-  backBtn.addEventListener('click', () => {
-    burstFrom(backBtn);
-
-    fingerEmoji.classList.remove('pop');
-    void fingerEmoji.offsetWidth; // restart animation each tap
-    fingerOverlay.classList.add('visible');
-    fingerEmoji.classList.add('pop');
-
-    setTimeout(() => {
-      fingerOverlay.classList.remove('visible');
-      fingerEmoji.classList.remove('pop');
-
-      backOverlay.classList.add('visible');
-      requestAnimationFrame(() => backMessageCard.classList.add('pop'));
-    }, 800);
-  });
-
-  closeBackBtn.addEventListener('click', () => {
-    backOverlay.classList.remove('visible');
-    backMessageCard.classList.remove('pop');
-    sentNote.classList.remove('show');
-  });
-
-  sendBtn.addEventListener('click', async () => {
-    const text = messageSlot.value.trim();
-    if(!text) return;
-
-    burstFrom(sendBtn);
-    sendBtn.disabled = true;
-
-    try {
-      const formData = new FormData();
-      formData.append('message', text);
-      formData.append('_subject', 'A little reply for you 💌');
-      formData.append('_captcha', 'false');
-      formData.append('_template', 'box');
-
-      const response = await fetch('https://formsubmit.co/ajax/nethrayasas026@gmail.com', {
-        method: 'POST',
-        headers: { 'Accept': 'application/json' },
-        body: formData
-      });
-
-      sentNote.textContent = response.ok ? 'Sent 💌' : "Couldn't send, try again";
-    } catch (err) {
-      sentNote.textContent = "Couldn't send, try again";
-    }
-
-    sentNote.classList.add('show');
-    messageSlot.value = '';
-    sendBtn.disabled = false;
-    setTimeout(() => sentNote.classList.remove('show'), 2500);
-  });
-
-  /* ---- Restart: back to the very first page, everything reset ---- */
-  restartBtn.addEventListener('click', () => {
-    burstFrom(restartBtn);
-
-    // close every overlay
-    finalOverlay.classList.remove('visible');
-    finalCard.classList.remove('pop');
-    roseOverlay.classList.remove('visible');
-    roseCard.classList.remove('pop');
-    backOverlay.classList.remove('visible');
-    backMessageCard.classList.remove('pop');
-    fingerOverlay.classList.remove('visible');
-    fingerEmoji.classList.remove('pop');
-    sentNote.classList.remove('show');
-    messageSlot.value = '';
-    if(floatingInterval){
-      clearInterval(floatingInterval);
-      floatingInterval = null;
-    }
-
-    // go back to page 1
-    page2.classList.remove('visible');
-    loveCard.classList.remove('pop');
-    page1.classList.remove('hidden');
-
-    // reset the wandering No button
-    noBtn.classList.remove('roaming');
-    noBtn.style.left = '';
-    noBtn.style.top = '';
-
-    // reset the Yes button size
-    yesScale = 1;
-    yesLoveBtn.style.setProperty('--s', 1);
-    yesLoveBtn.style.zIndex = '';
-
-    // hide Back/Restart again until Yes is picked next time
-    backBtn.style.display = 'none';
-    restartBtn.style.display = 'none';
-  });
+}
 </script>
 
 </body>
