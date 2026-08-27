@@ -754,7 +754,7 @@
 
     .detail-time {
       font-family: var(--font-serif);
-      font-size: 1.7rem;
+      font-size: 2.3rem;
       font-weight: 300;
       color: var(--sage);
       margin: 0.4rem 0;
@@ -1801,7 +1801,17 @@
 
           <div class="details-grid fade-in">
             <div class="detail-card glass" style="background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12);">
-              <span class="detail-icon">📅</span>
+              <span class="detail-icon date-icon" aria-hidden="true">
+                <svg viewBox="0 0 64 64" width="1.9em" height="1.9em" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="8" y="10" width="48" height="46" rx="6" fill="#ffffff" stroke="#b3271e" stroke-width="2.5"/>
+                  <rect x="8" y="10" width="48" height="15" rx="6" fill="#b3271e"/>
+                  <rect x="8" y="19" width="48" height="6" fill="#b3271e"/>
+                  <line x1="20" y1="6" x2="20" y2="16" stroke="#b3271e" stroke-width="3" stroke-linecap="round"/>
+                  <line x1="44" y1="6" x2="44" y2="16" stroke="#b3271e" stroke-width="3" stroke-linecap="round"/>
+                  <text x="32" y="20" text-anchor="middle" font-family="Georgia, serif" font-size="9" font-weight="600" fill="#ffffff" letter-spacing="1">OCT</text>
+                  <text x="32" y="47" text-anchor="middle" font-family="Georgia, serif" font-size="21" font-weight="600" fill="#b3271e">15</text>
+                </svg>
+              </span>
               <h3>The Date</h3>
               <div class="detail-time">Oct 15</div>
               <p>Thursday<br />2026</p>
@@ -1809,8 +1819,8 @@
             <div class="detail-card glass" style="background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12);">
               <span class="detail-icon">⏰</span>
               <h3>The Time</h3>
-              <div class="detail-time">9:00 AM</div>
-              <p>Reception to follow<br />the ceremony</p>
+              <p>Poruwa ceremony<br />will begin</p>
+              <div class="detail-time">10:04 am</div>
             </div>
             <div class="detail-card glass" style="background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12);">
               <span class="detail-icon">📍</span>
